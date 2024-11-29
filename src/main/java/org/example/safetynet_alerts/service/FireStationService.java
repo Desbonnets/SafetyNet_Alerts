@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FireStationService {
@@ -45,10 +46,47 @@ public class FireStationService {
         return fireStations;
     }
 
-    public FireStation getFireStationByNumber(int station) {
+    public List<FireStation> getFireStationByNumber(int station) {
         return fireStations.stream()
                 .filter(fireStation -> fireStation.getStation() == station)
-                .findFirst()
-                .orElse(null);
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public boolean addFireStation(FireStation fireStation) {
+        boolean exists = fireStations.stream()
+                .anyMatch(existing -> existing.getAddress().equals(fireStation.getAddress()) &&
+                        existing.getStation() == fireStation.getStation());
+
+        if (exists) {
+            logger.error("Une FireStation avec cette adresse et numéro de station existe déjà : {}", fireStation);
+            return false;
+        }
+
+        fireStations.add(fireStation);
+        logger.info("FireStation ajoutée : {}", fireStation);
+        return true;
+    }
+
+    public FireStation updateFireStation(String address, int station, FireStation updatedFireStation) {
+        for (int i = 0; i < fireStations.size(); i++) {
+            if (fireStations.get(i).getAddress().equals(address) && fireStations.get(i).getStation() == station) {
+                fireStations.set(i, updatedFireStation);
+                logger.info("FireStation modifier : {}", updatedFireStation);
+                return fireStations.get(i);
+            }
+        }
+        throw new IllegalArgumentException("FireStation non trouvée pour l'adresse et numéro de station : "
+                + address + " " + station);
+    }
+
+    public boolean deleteFireStation(int station, String address) {
+        boolean removed = fireStations.removeIf(fireStation -> fireStation.getStation() == station && fireStation.getAddress().equals(address));
+        if (removed) {
+            logger.info("FireStation supprimée pour l'adresse : {}", address + " " + station);
+        } else {
+            logger.warn("Aucune FireStation trouvée pour l'adresse : {}", address + " " + station);
+        }
+        return removed;
     }
 }

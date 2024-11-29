@@ -15,146 +15,168 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+/**
+ * Classe de test pour le contrôleur {@link FireStationController}.
+ * Cette classe vérifie les fonctionnalités principales des points d'entrée API pour gérer les stations de pompiers.
+ */
 class FireStationControllerTest {
 
     @Mock
-    private FireStationService fireStationService;
+    private FireStationService fireStationService; // Mock du service FireStationService
 
     @InjectMocks
-    private FireStationController fireStationController;
+    private FireStationController fireStationController; // Contrôleur à tester
 
+    /**
+     * Constructeur par défaut.
+     * Initialise les mocks nécessaires pour les tests.
+     */
     public FireStationControllerTest() {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * Teste la récupération des informations d'une station trouvée.
+     * Vérifie que le statut HTTP et les données retournées sont corrects.
+     */
     @Test
     void getFirestationInfo_found() {
-        // Arrange
         int stationNumber = 1;
         List<FireStation> mockStations = List.of(new FireStation("123 Main St", 1));
         when(fireStationService.getFireStationByNumber(stationNumber)).thenReturn(mockStations);
 
-        // Act
         ResponseEntity<List<FireStation>> response = fireStationController.getFirestationInfo(stationNumber);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(mockStations, response.getBody());
         verify(fireStationService, times(1)).getFireStationByNumber(stationNumber);
     }
 
+    /**
+     * Teste la récupération des informations d'une station non trouvée.
+     * Vérifie que le statut HTTP est 404 et que le corps de la réponse est null.
+     */
     @Test
     void getFirestationInfo_notFound() {
-        // Arrange
         int stationNumber = 1;
         when(fireStationService.getFireStationByNumber(stationNumber)).thenReturn(Collections.emptyList());
 
-        // Act
         ResponseEntity<List<FireStation>> response = fireStationController.getFirestationInfo(stationNumber);
 
-        // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals(null, response.getBody());
         verify(fireStationService, times(1)).getFireStationByNumber(stationNumber);
     }
 
+    /**
+     * Teste l'ajout d'une station de pompiers réussie.
+     * Vérifie que le statut HTTP est 201 et que la station est bien ajoutée.
+     */
     @Test
     void postFirestation_success() {
-        // Arrange
         FireStation newStation = new FireStation("123 Main St", 1);
         when(fireStationService.addFireStation(newStation)).thenReturn(true);
 
-        // Act
         ResponseEntity<FireStation> response = fireStationController.postFirestation(newStation);
 
-        // Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(newStation, response.getBody());
         verify(fireStationService, times(1)).addFireStation(newStation);
     }
 
+    /**
+     * Teste l'échec de l'ajout d'une station de pompiers.
+     * Vérifie qu'une exception avec un statut 400 est levée en cas d'échec.
+     */
     @Test
     void postFirestation_failure() {
-        // Arrange
         FireStation newStation = new FireStation("123 Main St", 1);
         when(fireStationService.addFireStation(newStation)).thenReturn(false);
 
-        // Act & Assert
         Exception exception = null;
         try {
             fireStationController.postFirestation(newStation);
         } catch (Exception ex) {
             exception = ex;
         }
+
         assertEquals("400 BAD_REQUEST \"Erreur d'enregistrement\"", exception.getMessage());
         verify(fireStationService, times(1)).addFireStation(newStation);
     }
 
+    /**
+     * Teste la mise à jour réussie d'une station de pompiers.
+     * Vérifie que le statut HTTP est 200 et que les données mises à jour sont correctes.
+     */
     @Test
     void putFirestationInfo_success() {
-        // Arrange
         String address = "123 Main St";
         int station = 1;
         FireStation updatedStation = new FireStation("123 Main St", 2);
         when(fireStationService.updateFireStation(address, station, updatedStation)).thenReturn(updatedStation);
 
-        // Act
         ResponseEntity<FireStation> response = fireStationController.putFirestationInfo(address, station, updatedStation);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(updatedStation, response.getBody());
         verify(fireStationService, times(1)).updateFireStation(address, station, updatedStation);
     }
 
+    /**
+     * Teste l'échec de la mise à jour d'une station de pompiers.
+     * Vérifie qu'une exception avec un statut 404 est levée si la station n'existe pas.
+     */
     @Test
     void putFirestationInfo_notFound() {
-        // Arrange
         String address = "123 Main St";
         int station = 1;
         FireStation updatedStation = new FireStation("123 Main St", 2);
         when(fireStationService.updateFireStation(address, station, updatedStation)).thenReturn(null);
 
-        // Act & Assert
         Exception exception = null;
         try {
             fireStationController.putFirestationInfo(address, station, updatedStation);
         } catch (Exception ex) {
             exception = ex;
         }
+
         assertEquals("404 NOT_FOUND \"Station non trouvée pour mise à jour\"", exception.getMessage());
         verify(fireStationService, times(1)).updateFireStation(address, station, updatedStation);
     }
 
+    /**
+     * Teste la suppression réussie d'une station de pompiers.
+     * Vérifie que le statut HTTP est 200 en cas de suppression réussie.
+     */
     @Test
     void deleteFirestationInfo_success() {
-        // Arrange
         String address = "123 Main St";
         int station = 1;
         when(fireStationService.deleteFireStation(station, address)).thenReturn(true);
 
-        // Act
         ResponseEntity<Void> response = fireStationController.deleteFirestationInfo(address, station);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(fireStationService, times(1)).deleteFireStation(station, address);
     }
 
+    /**
+     * Teste l'échec de la suppression d'une station de pompiers.
+     * Vérifie qu'une exception avec un statut 404 est levée si la station n'existe pas.
+     */
     @Test
     void deleteFirestationInfo_notFound() {
-        // Arrange
         String address = "123 Main St";
         int station = 1;
         when(fireStationService.deleteFireStation(station, address)).thenReturn(false);
 
-        // Act & Assert
         Exception exception = null;
         try {
             fireStationController.deleteFirestationInfo(address, station);
         } catch (Exception ex) {
             exception = ex;
         }
+
         assertEquals("404 NOT_FOUND \"Station non trouvée pour suppression\"", exception.getMessage());
         verify(fireStationService, times(1)).deleteFireStation(station, address);
     }

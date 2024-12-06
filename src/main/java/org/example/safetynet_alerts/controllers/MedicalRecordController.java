@@ -20,14 +20,24 @@ public class MedicalRecordController {
     @Autowired
     private MedicalRecordService medicalRecordService;
 
-    @GetMapping("/")
-    public ResponseEntity<List<MedicalRecord>> getMedicalRecordInfo() {
+    @GetMapping("")
+    public ResponseEntity<List<MedicalRecord>> getAllMedicalRecordInfo() {
         List<MedicalRecord> medicalRecordList = medicalRecordService.getAllMedicalRecordList();
         if (medicalRecordList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(null);
         }
         return ResponseEntity.ok(medicalRecordList);
+    }
+
+    @GetMapping("/{firstname}/{lastname}")
+    public ResponseEntity<MedicalRecord> getMedicalRecordInfo(@PathVariable String firstname, @PathVariable String lastname) {
+        MedicalRecord medicalRecord = medicalRecordService.getMedicalRecordByFirstnameAndLastname(firstname, lastname);
+        if (medicalRecord == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
+        return ResponseEntity.ok(medicalRecord);
     }
 
     @PostMapping("")

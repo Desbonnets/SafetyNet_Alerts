@@ -49,13 +49,13 @@ public class MedicalRecordService {
         return medicalRecordList;
     }
 
-    public List<MedicalRecord> getMedicalRecordByFirstnameAndLastname(String firstname, String lastname) {
+    public MedicalRecord getMedicalRecordByFirstnameAndLastname(String firstname, String lastname) {
         return medicalRecordList.stream()
                 .filter(fireStation -> Objects.equals(fireStation.getFirstName(), firstname) &&
                         Objects.equals(fireStation.getLastName(), lastname)
                 )
-                .distinct()
-                .collect(Collectors.toList());
+                .findAny()
+                .orElse(null);
     }
 
     public boolean addMedicalRecord(MedicalRecord medicalRecord) {

@@ -21,13 +21,23 @@ public class PersonController {
     private PersonService personService;
 
     @GetMapping("")
-    public ResponseEntity<List<Person>> getPersonInfo() {
+    public ResponseEntity<List<Person>> getAllPersonInfo() {
         List<Person> personList = personService.getAllPersonList();
         if (personList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(null);
         }
         return ResponseEntity.ok(personList);
+    }
+
+    @GetMapping("/{email}")
+    public ResponseEntity<Person> getPersonInfo(@PathVariable String email) {
+        Person person = personService.getPersonListByEmail(email);
+        if (person == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
+        }
+        return ResponseEntity.ok(person);
     }
 
     @PostMapping("")

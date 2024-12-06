@@ -3,8 +3,6 @@ package org.example.safetynet_alerts.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.example.safetynet_alerts.models.FireStation;
-import org.example.safetynet_alerts.models.FireStationsData;
 import org.example.safetynet_alerts.models.Person;
 import org.example.safetynet_alerts.models.PersonsData;
 import org.springframework.core.io.ClassPathResource;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class PersonService {
@@ -26,14 +23,14 @@ public class PersonService {
     public PersonService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper; // Assignation de l'ObjectMapper injecté
         try {
-            loadFireStations();
+            loadPersonList();
         } catch (Exception e) {
             logger.error("Erreur lors du chargement des données JSON : {}", e.getMessage());
             throw new IllegalArgumentException("Impossible de charger les données JSON", e);
         }
     }
 
-    private void loadFireStations() throws IOException {
+    private void loadPersonList() throws IOException {
         // Lire le fichier JSON et le mapper sur la classe PersonsData
         PersonsData data = objectMapper.readValue(
                 new ClassPathResource("data.json").getInputStream(),
@@ -49,11 +46,10 @@ public class PersonService {
         return personList;
     }
 
-    public List<Person> getPersonListByEmail(String email) {
+    public Person getPersonListByEmail(String email) {
         return personList.stream()
                 .filter(person -> Objects.equals(person.getEmail(), email))
-                .distinct()
-                .collect(Collectors.toList());
+                .findAny().orElse(null);
     }
 
     public boolean addPerson(Person person) {

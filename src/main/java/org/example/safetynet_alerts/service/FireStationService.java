@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,6 +51,21 @@ public class FireStationService {
         return fireStations.stream()
                 .filter(fireStation -> fireStation.getStation() == station)
                 .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public String getAddressByFireStationsNumber(int station) {
+
+        return fireStations.stream()
+                .filter(fireStation -> fireStation.getStation() == station)
+                .map(FireStation::getAddress)
+                .findAny().orElse(null);
+    }
+
+    public List<FireStation> getFireStationByAddress(String address) {
+
+        return fireStations.stream()
+                .filter(fireStation -> Objects.equals(fireStation.getAddress(), address))
                 .collect(Collectors.toList());
     }
 

@@ -43,7 +43,7 @@ public class PersonService {
         );
 
         // Extraire la liste des stations de la structure racine
-        personList = data.getPersonList();
+        personList = data.getPersons();
         logger.info("Données chargées : {}", personList.size());
     }
 

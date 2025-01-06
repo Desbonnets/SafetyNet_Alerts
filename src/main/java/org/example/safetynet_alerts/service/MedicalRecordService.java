@@ -41,7 +41,7 @@ public class MedicalRecordService {
         );
 
         // Extraire la liste des stations de la structure racine
-        medicalRecordList = data.getMedicalRecordList();
+        medicalRecordList = data.getMedicalrecords();
         logger.info("Données chargées : {}", medicalRecordList.size());
     }
 

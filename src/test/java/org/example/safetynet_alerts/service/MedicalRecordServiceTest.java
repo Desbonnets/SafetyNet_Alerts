@@ -52,7 +52,7 @@ class MedicalRecordServiceTest {
 
         // Mocking the ObjectMapper to return the mock data
         MedicalRecordData mockData = new MedicalRecordData();
-        mockData.setMedicalRecordList(mockMedicalRecords);
+        mockData.setMedicalrecords(mockMedicalRecords);
 
         when(objectMapper.readValue(any(InputStream.class), eq(MedicalRecordData.class)))
                 .thenReturn(mockData);

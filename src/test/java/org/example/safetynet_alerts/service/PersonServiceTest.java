@@ -54,7 +54,7 @@ class PersonServiceTest {
 
         // Mocking the ObjectMapper to return the mock data
         PersonsData mockData = new PersonsData();
-        mockData.setPersonList(mockPersons);
+        mockData.setPersons(mockPersons);
         when(objectMapper.readValue(any(InputStream.class), eq(PersonsData.class))).thenReturn(mockData);
 
         // Initialize the service

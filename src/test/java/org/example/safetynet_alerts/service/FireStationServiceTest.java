@@ -156,4 +156,31 @@ class FireStationServiceTest {
         boolean success = fireStationService.deleteFireStation(99, "Nonexistent St");
         assertFalse(success);
     }
+
+    @Test
+    void getAddressByFireStationsNumber_ShouldReturnCorrectAddressForStation() {
+        List<String> address = fireStationService.getAddressByFireStationsNumber(1);
+        assertEquals(1, address.size());
+        assertEquals("123 Main St", address.get(0));
+    }
+
+    @Test
+    void getAddressByFireStationsNumber_ShouldReturnNullForInvalidStation() {
+        List<String> address = fireStationService.getAddressByFireStationsNumber(99);
+        assertEquals(0, address.size());
+    }
+
+    @Test
+    void getFireStationByAddress_ShouldReturnStationsForGivenAddress() {
+        List<FireStation> result = fireStationService.getFireStationByAddress("123 Main St");
+        assertEquals(1, result.size());
+        assertEquals(1, result.get(0).getStation());
+    }
+
+    @Test
+    void getFireStationByAddress_ShouldReturnEmptyListForInvalidAddress() {
+        List<FireStation> result = fireStationService.getFireStationByAddress("Nonexistent St");
+        assertTrue(result.isEmpty());
+    }
+
 }

@@ -61,6 +61,7 @@ public class PersonService {
         return personList.stream()
                 .filter(person -> Objects.equals(person.getCity(), city))
                 .map(Person::getEmail)
+                .distinct()
                 .collect(Collectors.toList());
     }
 
@@ -87,6 +88,7 @@ public class PersonService {
 
         return personList.stream()
                 .map(Person::getPhone)
+                .distinct()
                 .collect(Collectors.toList());
     }
 

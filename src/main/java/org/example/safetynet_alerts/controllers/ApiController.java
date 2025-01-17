@@ -2,7 +2,6 @@ package org.example.safetynet_alerts.controllers;
 
 import org.example.safetynet_alerts.models.FireStation;
 import org.example.safetynet_alerts.models.Person;
-import org.example.safetynet_alerts.models.PersonInfoDTO;
 import org.example.safetynet_alerts.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,13 +10,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
-public class Controller {
+public class ApiController {
 
     @Autowired
     private PersonService personService;
@@ -38,10 +36,10 @@ public class Controller {
         return ResponseEntity.ok(emailList);
     }
 
-    @GetMapping("/personInfolastName")
-    public ResponseEntity<List<PersonInfoDTO>> getPersonInfo(@RequestParam String lastName) {
+    @GetMapping("/personInfo")
+    public ResponseEntity<List<Map<String, Object>>> getPersonInfo(@RequestParam String lastName) {
         List<Person> persons = personService.getAllPersonByLastname(lastName);
-        List<PersonInfoDTO> personInfos = personInfoService.getAllPersonInfoDTO(persons);
+        List<Map<String, Object>> personInfos = personInfoService.getAllPersonInfo(persons);
 
         if (personInfos == null || personInfos.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -54,16 +52,25 @@ public class Controller {
     @GetMapping("/flood/stations")
     public ResponseEntity<List<Map<String, Object>>> getStationsFlood(@RequestParam List<Integer> stations) {
 
+        // Construire le résultat en traitant chaque station
         List<Map<String, Object>> result = stations.stream()
                 .map(station -> {
                     // Récupérer les adresses pour la station
-                    String address = fireStationService.getAddressByFireStationsNumber(station);
+                    List<String> addresses = fireStationService.getAddressByFireStationsNumber(station);
+                    if (addresses == null || addresses.isEmpty()) {
+                        return null; // Ignorer les stations sans adresses
+                    }
 
                     // Récupérer les personnes associées aux adresses
-                    List<Person> persons = personService.getPersonsByAddress(address);
+                    List<Person> persons = addresses.stream()
+                            .flatMap(address -> {
+                                List<Person> personsAtAddress = personService.getPersonsByAddress(address);
+                                return personsAtAddress != null ? personsAtAddress.stream() : Stream.empty();
+                            })
+                            .collect(Collectors.toList());
 
-                    // Transformer les personnes en DTOs
-                    List<PersonInfoDTO> personInfos = personInfoService.getAllPersonInfoDTO(persons);
+                    // Transformer les personnes en informations détaillées
+                    List<Map<String, Object>> personInfos = personInfoService.getAllPersonInfo(persons);
 
                     // Retourner les données pour cette station
                     return Map.of(
@@ -71,6 +78,7 @@ public class Controller {
                             "personInfos", personInfos
                     );
                 })
+                .filter(Objects::nonNull) // Filtrer les stations sans données
                 .filter(map -> !((List<?>) map.get("personInfos")).isEmpty()) // Filtrer les stations sans personnes
                 .collect(Collectors.toList());
 
@@ -84,6 +92,7 @@ public class Controller {
         return ResponseEntity.ok(result);
     }
 
+
     @GetMapping("/fire")
     public ResponseEntity<List<Map<String, Object>>> getFire(@RequestParam String address) {
 
@@ -96,7 +105,7 @@ public class Controller {
                     List<Person> persons = personService.getPersonsByAddress(address);
 
                     // Transformer les personnes en DTOs
-                    List<PersonInfoDTO> personInfos = personInfoService.getAllPersonInfoDTO(persons);
+                    List<Map<String, Object>> personInfos = personInfoService.getAllPersonInfo(persons);
 
                     // Retourner les données pour cette station
                     return Map.of(
@@ -119,8 +128,18 @@ public class Controller {
 
     @GetMapping("/phoneAlert")
     public ResponseEntity<List<String>> getPhoneAlert(@RequestParam int fireStationNumber) {
-        String address = fireStationService.getAddressByFireStationsNumber(fireStationNumber);
-        List<Person> persons = personService.getPersonsByAddress(address);
+
+        List<String> addresses = fireStationService.getAddressByFireStationsNumber(fireStationNumber);
+        if (addresses == null || addresses.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.emptyList());
+        }
+
+        // Récupérer les personnes vivant à ces adresses
+        List<Person> persons = addresses.stream()
+                .flatMap(address -> personService.getPersonsByAddress(address).stream())
+                .collect(Collectors.toList());
+
         List<String> listPhone = personService.getAllPhoneByPersons(persons);
 
         if (listPhone == null || listPhone.isEmpty()) {

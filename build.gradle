@@ -32,9 +32,10 @@ jacoco {
 }
 
 tasks.jacocoTestReport {
-    dependsOn test // Générer le rapport après l'exécution des tests
+    dependsOn test
     reports {
         xml.required = true
+        xml.outputLocation = file("$buildDir/jacoco-reports/jacocoTestReport.xml")
         html.required = true
     }
 }
@@ -46,7 +47,7 @@ tasks.jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.80 // Exemple : 80 % de couverture minimale
+                minimum = 0.80
             }
         }
     }
@@ -54,8 +55,10 @@ tasks.jacocoTestCoverageVerification {
 
 tasks.test {
     useJUnitPlatform() // S'assure que JUnit 5 est utilisé
+    finalizedBy(tasks.jacocoTestReport) // Générer automatiquement le rapport après les tests
     reports {
         html.required = true // Générer un rapport HTML
         junitXml.required = true // Générer un rapport XML (par défaut pour CI/CD)
+        junitXml.outputLocation = file("$buildDir/surefire-reports")
     }
 }

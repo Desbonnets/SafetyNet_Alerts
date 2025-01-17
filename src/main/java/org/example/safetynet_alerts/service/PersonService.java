@@ -3,14 +3,17 @@ package org.example.safetynet_alerts.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.example.safetynet_alerts.models.Person;
-import org.example.safetynet_alerts.models.PersonsData;
+import org.example.safetynet_alerts.models.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class PersonService {
@@ -20,7 +23,9 @@ public class PersonService {
     private final ObjectMapper objectMapper; // Injection de l'ObjectMapper via le constructeur
 
     // Injection de l'ObjectMapper par Spring
-    public PersonService(ObjectMapper objectMapper) {
+    public PersonService(
+            ObjectMapper objectMapper
+    ) {
         this.objectMapper = objectMapper; // Assignation de l'ObjectMapper injecté
         try {
             loadPersonList();
@@ -38,7 +43,7 @@ public class PersonService {
         );
 
         // Extraire la liste des stations de la structure racine
-        personList = data.getPersonList();
+        personList = data.getPersons();
         logger.info("Données chargées : {}", personList.size());
     }
 
@@ -50,6 +55,39 @@ public class PersonService {
         return personList.stream()
                 .filter(person -> Objects.equals(person.getEmail(), email))
                 .findAny().orElse(null);
+    }
+
+    public List<String> getAllEmailByCity(String city) {
+        return personList.stream()
+                .filter(person -> Objects.equals(person.getCity(), city))
+                .map(Person::getEmail)
+                .collect(Collectors.toList());
+    }
+
+    public List<Person> getAllPersonByLastname(String lastname) {
+        return personList.stream()
+                .filter(person -> Objects.equals(person.getLastName(), lastname))
+                .collect(Collectors.toList());
+    }
+
+    public List<Person> getPersonsByAddress(String address) {
+
+        // Récupérer les personnes vivant à ces adresses
+        return personList.stream()
+                .filter(person -> Objects.equals(person.getAddress(), address))
+                .collect(Collectors.toList());
+    }
+
+
+    public List<String> getAllPhoneByPersons(List<Person> persons) {
+
+        if (persons.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return personList.stream()
+                .map(Person::getPhone)
+                .collect(Collectors.toList());
     }
 
     public boolean addPerson(Person person) {

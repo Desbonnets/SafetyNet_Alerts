@@ -6,14 +6,14 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MedicalRecordData {
-    private List<MedicalRecord> medicalRecordList;
+    private List<MedicalRecord> medicalrecords;
 
-    public List<MedicalRecord> getMedicalRecordList() {
-        return medicalRecordList;
+    public List<MedicalRecord> getMedicalrecords() {
+        return medicalrecords;
     }
 
-    public void setMedicalRecordList(List<MedicalRecord> medicalRecordList) {
-        this.medicalRecordList = medicalRecordList;
+    public void setMedicalrecords(List<MedicalRecord> medicalrecords) {
+        this.medicalrecords = medicalrecords;
     }
 }
 

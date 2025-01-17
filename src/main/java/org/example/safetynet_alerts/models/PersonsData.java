@@ -6,14 +6,14 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PersonsData {
-    private List<Person> personList;
+    private List<Person> persons;
 
-    public List<Person> getPersonList() {
-        return personList;
+    public List<Person> getPersons() {
+        return persons;
     }
 
-    public void setPersonList(List<Person> personList) {
-        this.personList = personList;
+    public void setPersons(List<Person> persons) {
+        this.persons = persons;
     }
 }
 

@@ -57,7 +57,7 @@ public class MedicalRecordController {
         if (medicalRecord != null) {
             return ResponseEntity.ok(medicalRecord);
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "MedicalRecord non trouvée pour mise à jour");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Dossier médical non trouvé pour mise à jour");
         }
     }
 
@@ -67,7 +67,7 @@ public class MedicalRecordController {
         if (isDeleted) {
             return ResponseEntity.ok().build();
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "MedicalRecord non trouvée pour suppression");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Dossier médical non trouvé pour suppression");
         }
     }
 }

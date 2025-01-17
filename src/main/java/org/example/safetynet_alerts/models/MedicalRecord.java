@@ -6,14 +6,14 @@ import java.util.List;
 public class MedicalRecord {
     private String firstName;
     private String lastName;
-    private Date birthDate;
+    private String birthdate;
     private List<String> medications;
     private List<String> allergies;
 
-    public MedicalRecord(String firstName, String lastName, Date birthDate, List<String> medications, List<String> allergies) {
+    public MedicalRecord(String firstName, String lastName, String birthdate, List<String> medications, List<String> allergies) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.birthDate = birthDate;
+        this.birthdate = birthdate;
         this.medications = medications;
         this.allergies = allergies;
     }
@@ -22,24 +22,12 @@ public class MedicalRecord {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Date getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
+    public String getBirthDate() {
+        return birthdate;
     }
 
     public List<String> getMedications() {
@@ -54,7 +42,4 @@ public class MedicalRecord {
         return allergies;
     }
 
-    public void setAllergies(List<String> allergies) {
-        this.allergies = allergies;
-    }
 }

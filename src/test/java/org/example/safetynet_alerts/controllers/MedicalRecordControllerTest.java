@@ -35,7 +35,7 @@ class MedicalRecordControllerTest {
     private MedicalRecord createMedicalRecord() throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         Date birthDate = sdf.parse("01/01/1990");
-        return new MedicalRecord("John", "Doe", birthDate, List.of("Med1", "Med2"), List.of("Allergy1", "Allergy2"));
+        return new MedicalRecord("John", "Doe", "01/01/1990", List.of("Med1", "Med2"), List.of("Allergy1", "Allergy2"));
     }
 
     /**
@@ -175,4 +175,39 @@ class MedicalRecordControllerTest {
         assertEquals("404 NOT_FOUND \"Dossier médical non trouvé pour suppression\"", exception.getMessage());
         verify(medicalRecordService, times(1)).deleteMedicalRecord("John", "Doe");
     }
+
+    @Test
+    void getAllMedicalRecordInfo_found() throws Exception {
+        // Mock des données
+        MedicalRecord mockRecord1 = createMedicalRecord();
+        MedicalRecord mockRecord2 = new MedicalRecord("Jane", "Doe", "02/02/1992", List.of("Med3"), List.of("Allergy3"));
+        List<MedicalRecord> mockMedicalRecords = List.of(mockRecord1, mockRecord2);
+
+        // Configuration du mock pour retourner les enregistrements
+        when(medicalRecordService.getAllMedicalRecordList()).thenReturn(mockMedicalRecords);
+
+        // Appel du contrôleur
+        ResponseEntity<List<MedicalRecord>> response = medicalRecordController.getAllMedicalRecordInfo();
+
+        // Vérification des résultats
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(mockMedicalRecords, response.getBody());
+        assertEquals(2, response.getBody().size());
+        verify(medicalRecordService, times(1)).getAllMedicalRecordList();
+    }
+
+    @Test
+    void getAllMedicalRecordInfo_notFound() throws Exception {
+        // Configuration du mock pour retourner une liste vide
+        when(medicalRecordService.getAllMedicalRecordList()).thenReturn(Collections.emptyList());
+
+        // Appel du contrôleur
+        ResponseEntity<List<MedicalRecord>> response = medicalRecordController.getAllMedicalRecordInfo();
+
+        // Vérification des résultats
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(medicalRecordService, times(1)).getAllMedicalRecordList();
+    }
+
 }

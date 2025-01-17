@@ -1,9 +1,7 @@
 package org.example.safetynet_alerts.controllers;
 
-import org.example.safetynet_alerts.controllers.PersonController;
 import org.example.safetynet_alerts.models.Person;
 import org.example.safetynet_alerts.service.PersonService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -19,18 +17,31 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for the PersonController class.
+ * This test class uses Mockito to mock dependencies (PersonService) and tests the controller's behavior.
+ * It ensures that each endpoint in the PersonController behaves correctly according to the service's responses.
+ */
 class PersonControllerTest {
 
     @Mock
-    private PersonService personService; // Mock du service PersonService
+    private PersonService personService; // Mock for PersonService
 
     @InjectMocks
-    private PersonController personController; // Contrôleur à tester
+    private PersonController personController; // PersonController under test
 
+    /**
+     * Initializes mocks before each test.
+     * This method is called before each test to set up the mock objects.
+     */
     public PersonControllerTest() {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * Creates a mock person with default data for testing.
+     * @return a Person object with mock data
+     */
     private Person createPerson() {
         return new Person(
                 "John",
@@ -43,8 +54,8 @@ class PersonControllerTest {
     }
 
     /**
-     * Teste la récupération de la liste de toutes les personnes trouvées.
-     * Vérifie que le statut HTTP est 200 et les données retournées sont correctes.
+     * Tests the retrieval of a list of all persons when persons are found.
+     * Verifies that the status code is 200 and the returned data is correct.
      */
     @Test
     void getAllPersonInfo_found() {
@@ -59,8 +70,8 @@ class PersonControllerTest {
     }
 
     /**
-     * Teste la récupération de la liste des personnes lorsque la liste est vide.
-     * Vérifie que le statut HTTP est 404 et que le corps de la réponse est null.
+     * Tests the retrieval of a list of persons when the list is empty.
+     * Verifies that the status code is 404 and the response body is null.
      */
     @Test
     void getAllPersonInfo_notFound() {
@@ -74,8 +85,8 @@ class PersonControllerTest {
     }
 
     /**
-     * Teste la récupération des informations d'une personne trouvée.
-     * Vérifie que le statut HTTP et les données retournées sont corrects.
+     * Tests the retrieval of a person's information when the person is found.
+     * Verifies that the status code and the returned data are correct.
      */
     @Test
     void getPersonInfo_found() {
@@ -90,8 +101,8 @@ class PersonControllerTest {
     }
 
     /**
-     * Teste la récupération des informations d'une personne non trouvée.
-     * Vérifie que le statut HTTP est 404 et que le corps de la réponse est null.
+     * Tests the retrieval of a person's information when the person is not found.
+     * Verifies that the status code is 404 and the response body is null.
      */
     @Test
     void getPersonInfo_notFound() {
@@ -105,8 +116,8 @@ class PersonControllerTest {
     }
 
     /**
-     * Teste l'ajout d'une personne réussie.
-     * Vérifie que le statut HTTP est 201 et que la personne est bien ajoutée.
+     * Tests the successful addition of a new person.
+     * Verifies that the status code is 201 and the person is correctly added.
      */
     @Test
     void postPerson_success() {
@@ -123,8 +134,8 @@ class PersonControllerTest {
     }
 
     /**
-     * Teste l'échec de l'ajout d'une personne.
-     * Vérifie qu'une exception avec un statut 400 est levée en cas d'échec.
+     * Tests the failure scenario for adding a person.
+     * Verifies that an exception with status 400 is thrown when the addition fails.
      */
     @Test
     void postPerson_failure() {
@@ -144,8 +155,8 @@ class PersonControllerTest {
     }
 
     /**
-     * Teste la mise à jour réussie d'une personne.
-     * Vérifie que le statut HTTP est 200 et que les données mises à jour sont correctes.
+     * Tests the successful update of a person's information.
+     * Verifies that the status code is 200 and the updated data is correct.
      */
     @Test
     void putPersonInfo_success() {
@@ -162,8 +173,8 @@ class PersonControllerTest {
     }
 
     /**
-     * Teste l'échec de la mise à jour d'une personne.
-     * Vérifie qu'une exception avec un statut 404 est levée si la personne n'existe pas.
+     * Tests the failure scenario for updating a person's information when the person is not found.
+     * Verifies that an exception with status 404 is thrown.
      */
     @Test
     void putPersonInfo_notFound() {
@@ -183,8 +194,8 @@ class PersonControllerTest {
     }
 
     /**
-     * Teste la suppression réussie d'une personne.
-     * Vérifie que le statut HTTP est 200 en cas de suppression réussie.
+     * Tests the successful deletion of a person.
+     * Verifies that the status code is 200 when the deletion is successful.
      */
     @Test
     void deletePersonInfo_success() {
@@ -197,8 +208,8 @@ class PersonControllerTest {
     }
 
     /**
-     * Teste l'échec de la suppression d'une personne.
-     * Vérifie qu'une exception avec un statut 404 est levée si la personne n'existe pas.
+     * Tests the failure scenario for deleting a person when the person is not found.
+     * Verifies that an exception with status 404 is thrown.
      */
     @Test
     void deletePersonInfo_notFound() {
@@ -216,4 +227,3 @@ class PersonControllerTest {
         verify(personService, times(1)).deletePerson("john.doe@example.com");
     }
 }
-

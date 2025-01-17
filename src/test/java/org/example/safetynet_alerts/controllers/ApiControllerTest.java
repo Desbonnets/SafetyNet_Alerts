@@ -24,17 +24,18 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Test class for {@link ApiController}.
+ * This class contains unit tests for the various API endpoints in the {@link ApiController}.
+ */
 @WebMvcTest(ApiController.class)
-public class ApiControllerTest {
+class ApiControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private PersonService personService;
-
-    @MockBean
-    private MedicalRecordService medicalRecordService;
 
     @MockBean
     private FireStationService fireStationService;
@@ -44,6 +45,9 @@ public class ApiControllerTest {
 
     private List<Person> mockPersons;
 
+    /**
+     * Initializes mock data before each test.
+     */
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
@@ -62,6 +66,10 @@ public class ApiControllerTest {
         );
     }
 
+    /**
+     * Tests the API endpoint for retrieving community emails.
+     * @throws Exception if there is an issue with the test execution
+     */
     @Test
     void testGetCommunityEmail_Found() throws Exception {
         Mockito.when(personService.getAllEmailByCity(anyString()))
@@ -73,6 +81,10 @@ public class ApiControllerTest {
                 .andExpect(jsonPath("$", hasSize(2)));
     }
 
+    /**
+     * Tests the API endpoint for retrieving community emails when no emails are found.
+     * @throws Exception if there is an issue with the test execution
+     */
     @Test
     void testGetCommunityEmail_NotFound() throws Exception {
         Mockito.when(personService.getAllEmailByCity(anyString()))
@@ -84,6 +96,10 @@ public class ApiControllerTest {
                 .andExpect(jsonPath("$", hasSize(0)));
     }
 
+    /**
+     * Tests the API endpoint for retrieving person information by last name.
+     * @throws Exception if there is an issue with the test execution
+     */
     @Test
     void testGetPersonInfo_Found() throws Exception {
         Mockito.when(personService.getAllPersonByLastname(anyString()))
@@ -98,6 +114,10 @@ public class ApiControllerTest {
                 .andExpect(jsonPath("$[0].name").value("John Doe"));
     }
 
+    /**
+     * Tests the API endpoint for retrieving person information by last name when no person is found.
+     * @throws Exception if there is an issue with the test execution
+     */
     @Test
     void testGetPersonInfo_NotFound() throws Exception {
         Mockito.when(personService.getAllPersonByLastname(anyString()))
@@ -111,6 +131,10 @@ public class ApiControllerTest {
                 .andExpect(jsonPath("$", hasSize(0)));
     }
 
+    /**
+     * Tests the API endpoint for retrieving fire stations affected by a flood.
+     * @throws Exception if there is an issue with the test execution
+     */
     @Test
     void testGetStationsFlood_Found() throws Exception {
         Mockito.when(fireStationService.getAddressByFireStationsNumber(anyInt()))
@@ -127,6 +151,10 @@ public class ApiControllerTest {
                 .andExpect(jsonPath("$[0].personInfos[0].name").value("John Doe"));
     }
 
+    /**
+     * Tests the API endpoint for retrieving fire stations affected by a flood when no stations are found.
+     * @throws Exception if there is an issue with the test execution
+     */
     @Test
     void testGetStationsFlood_NotFound() throws Exception {
         Mockito.when(fireStationService.getAddressByFireStationsNumber(anyInt()))
@@ -138,6 +166,10 @@ public class ApiControllerTest {
                 .andExpect(jsonPath("$", hasSize(0)));
     }
 
+    /**
+     * Tests the API endpoint for retrieving phone alerts for a fire station.
+     * @throws Exception if there is an issue with the test execution
+     */
     @Test
     void testGetPhoneAlert_Found() throws Exception {
         Mockito.when(fireStationService.getAddressByFireStationsNumber(anyInt()))
@@ -154,6 +186,10 @@ public class ApiControllerTest {
                 .andExpect(jsonPath("$[0]").value("123-456-7890"));
     }
 
+    /**
+     * Tests the API endpoint for retrieving phone alerts for a fire station when no phones are found.
+     * @throws Exception if there is an issue with the test execution
+     */
     @Test
     void testGetPhoneAlert_NotFound() throws Exception {
         Mockito.when(fireStationService.getAddressByFireStationsNumber(anyInt()))
@@ -165,6 +201,10 @@ public class ApiControllerTest {
                 .andExpect(jsonPath("$", hasSize(0)));
     }
 
+    /**
+     * Tests the API endpoint for retrieving information about a fire at a given address.
+     * @throws Exception if there is an issue with the test execution
+     */
     @Test
     void testGetFire_Found() throws Exception {
         Mockito.when(fireStationService.getFireStationByAddress(anyString()))
@@ -182,6 +222,10 @@ public class ApiControllerTest {
                 .andExpect(jsonPath("$[0].personInfos[0].name").value("John Doe"));
     }
 
+    /**
+     * Tests the API endpoint for retrieving information about a fire at a given address when no fire stations are found.
+     * @throws Exception if there is an issue with the test execution
+     */
     @Test
     void testGetFire_NotFound() throws Exception {
         Mockito.when(fireStationService.getFireStationByAddress(anyString()))
@@ -193,6 +237,10 @@ public class ApiControllerTest {
                 .andExpect(jsonPath("$", hasSize(0)));
     }
 
+    /**
+     * Tests the API endpoint for retrieving child alerts based on address.
+     * @throws Exception if there is an issue with the test execution
+     */
     @Test
     void testGetChildAlert_Found() throws Exception {
         Mockito.when(personInfoService.getChildAlertByAddress(anyString()))
@@ -205,6 +253,10 @@ public class ApiControllerTest {
                 .andExpect(jsonPath("$[0].childName").value("Jane Doe"));
     }
 
+    /**
+     * Tests the API endpoint for retrieving child alerts when no children are found.
+     * @throws Exception if there is an issue with the test execution
+     */
     @Test
     void testGetChildAlert_NotFound() throws Exception {
         Mockito.when(personInfoService.getChildAlertByAddress(anyString()))
@@ -216,6 +268,10 @@ public class ApiControllerTest {
                 .andExpect(jsonPath("$", hasSize(0)));
     }
 
+    /**
+     * Tests the API endpoint for retrieving fire station coverage information.
+     * @throws Exception if there is an issue with the test execution
+     */
     @Test
     void testGetCoverageByFireStation_Found() throws Exception {
         Mockito.when(personInfoService.getCoverageByFireStation(anyInt()))
@@ -233,6 +289,10 @@ public class ApiControllerTest {
                 .andExpect(jsonPath("$.childrenCount").value(0));
     }
 
+    /**
+     * Tests the API endpoint for retrieving fire station coverage information when no data is found.
+     * @throws Exception if there is an issue with the test execution
+     */
     @Test
     void testGetCoverageByFireStation_NotFound() throws Exception {
         Mockito.when(personInfoService.getCoverageByFireStation(anyInt()))
@@ -243,6 +303,4 @@ public class ApiControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$").isEmpty());
     }
-
-
 }

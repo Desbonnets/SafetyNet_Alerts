@@ -1,10 +1,7 @@
 package org.example.safetynet_alerts.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.safetynet_alerts.controllers.MedicalRecordController;
 import org.example.safetynet_alerts.models.MedicalRecord;
 import org.example.safetynet_alerts.service.MedicalRecordService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -12,38 +9,38 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test class for the {@link MedicalRecordController}.
+ * This class tests the core functionality of the API endpoints for managing medical records.
+ */
 class MedicalRecordControllerTest {
 
     @Mock
-    private MedicalRecordService medicalRecordService; // Mock du service MedicalRecordService
+    private MedicalRecordService medicalRecordService; // Mock for the MedicalRecordService
 
     @InjectMocks
-    private MedicalRecordController medicalRecordController; // Contrôleur à tester
+    private MedicalRecordController medicalRecordController; // Controller to test
 
     public MedicalRecordControllerTest() {
         MockitoAnnotations.openMocks(this);
     }
 
-    private MedicalRecord createMedicalRecord() throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        Date birthDate = sdf.parse("01/01/1990");
+    private MedicalRecord createMedicalRecord() {
         return new MedicalRecord("John", "Doe", "01/01/1990", List.of("Med1", "Med2"), List.of("Allergy1", "Allergy2"));
     }
 
     /**
-     * Teste la récupération des informations d'un dossier médical trouvé.
-     * Vérifie que le statut HTTP et les données retournées sont corrects.
+     * Tests retrieving a found medical record.
+     * Verifies that the HTTP status and returned data are correct.
      */
     @Test
-    void getMedicalRecordInfo_found() throws Exception {
+    void getMedicalRecordInfo_found() {
         MedicalRecord mockRecord = createMedicalRecord();
         when(medicalRecordService.getMedicalRecordByFirstnameAndLastname("John", "Doe")).thenReturn(mockRecord);
 
@@ -55,11 +52,11 @@ class MedicalRecordControllerTest {
     }
 
     /**
-     * Teste la récupération des informations d'un dossier médical non trouvé.
-     * Vérifie que le statut HTTP est 404 et que le corps de la réponse est null.
+     * Tests retrieving a not found medical record.
+     * Verifies that the HTTP status is 404 and that the response body is null.
      */
     @Test
-    void getMedicalRecordInfo_notFound() throws Exception {
+    void getMedicalRecordInfo_notFound() {
         when(medicalRecordService.getMedicalRecordByFirstnameAndLastname("Jane", "Doe")).thenReturn(null);
 
         ResponseEntity<MedicalRecord> response = medicalRecordController.getMedicalRecordInfo("Jane", "Doe");
@@ -70,11 +67,11 @@ class MedicalRecordControllerTest {
     }
 
     /**
-     * Teste l'ajout d'un dossier médical réussi.
-     * Vérifie que le statut HTTP est 201 et que le dossier médical est bien ajouté.
+     * Tests the successful addition of a medical record.
+     * Verifies that the HTTP status is 201 and the record is correctly added.
      */
     @Test
-    void postMedicalRecord_success() throws Exception {
+    void postMedicalRecord_success() {
         MedicalRecord newRecord = createMedicalRecord();
         when(medicalRecordService.addMedicalRecord(newRecord)).thenReturn(true);
 
@@ -86,11 +83,11 @@ class MedicalRecordControllerTest {
     }
 
     /**
-     * Teste l'échec de l'ajout d'un dossier médical.
-     * Vérifie qu'une exception avec un statut 400 est levée en cas d'échec.
+     * Tests the failure of adding a medical record.
+     * Verifies that an exception with a 400 status is thrown on failure.
      */
     @Test
-    void postMedicalRecord_failure() throws Exception {
+    void postMedicalRecord_failure() {
         MedicalRecord newRecord = createMedicalRecord();
         when(medicalRecordService.addMedicalRecord(newRecord)).thenReturn(false);
 
@@ -101,16 +98,16 @@ class MedicalRecordControllerTest {
             exception = ex;
         }
 
-        assertEquals("400 BAD_REQUEST \"Erreur d'enregistrement\"", exception.getMessage());
+        assertEquals("400 BAD_REQUEST \"Registration error\"", exception.getMessage());
         verify(medicalRecordService, times(1)).addMedicalRecord(newRecord);
     }
 
     /**
-     * Teste la mise à jour réussie d'un dossier médical.
-     * Vérifie que le statut HTTP est 200 et que les données mises à jour sont correctes.
+     * Tests the successful update of a medical record.
+     * Verifies that the HTTP status is 200 and that the updated data is correct.
      */
     @Test
-    void putMedicalRecordInfo_success() throws Exception {
+    void putMedicalRecordInfo_success() {
         MedicalRecord updatedRecord = createMedicalRecord();
         updatedRecord.setMedications(List.of("Med3"));
 
@@ -124,11 +121,11 @@ class MedicalRecordControllerTest {
     }
 
     /**
-     * Teste l'échec de la mise à jour d'un dossier médical.
-     * Vérifie qu'une exception avec un statut 404 est levée si le dossier n'existe pas.
+     * Tests the failure of updating a medical record.
+     * Verifies that an exception with a 404 status is thrown if the record is not found.
      */
     @Test
-    void putMedicalRecordInfo_notFound() throws Exception {
+    void putMedicalRecordInfo_notFound() {
         MedicalRecord updatedRecord = createMedicalRecord();
         when(medicalRecordService.updateMedicalRecord("John", "Doe", updatedRecord)).thenReturn(null);
 
@@ -139,16 +136,16 @@ class MedicalRecordControllerTest {
             exception = ex;
         }
 
-        assertEquals("404 NOT_FOUND \"Dossier médical non trouvé pour mise à jour\"", exception.getMessage());
+        assertEquals("404 NOT_FOUND \"Medical record not found for update\"", exception.getMessage());
         verify(medicalRecordService, times(1)).updateMedicalRecord("John", "Doe", updatedRecord);
     }
 
     /**
-     * Teste la suppression réussie d'un dossier médical.
-     * Vérifie que le statut HTTP est 200 en cas de suppression réussie.
+     * Tests the successful deletion of a medical record.
+     * Verifies that the HTTP status is 200 on successful deletion.
      */
     @Test
-    void deleteMedicalRecordInfo_success() throws Exception {
+    void deleteMedicalRecordInfo_success() {
         when(medicalRecordService.deleteMedicalRecord("John", "Doe")).thenReturn(true);
 
         ResponseEntity<Void> response = medicalRecordController.deleteMedicalRecordInfo("John", "Doe");
@@ -158,11 +155,11 @@ class MedicalRecordControllerTest {
     }
 
     /**
-     * Teste l'échec de la suppression d'un dossier médical.
-     * Vérifie qu'une exception avec un statut 404 est levée si le dossier n'existe pas.
+     * Tests the failure of deleting a medical record.
+     * Verifies that an exception with a 404 status is thrown if the record is not found.
      */
     @Test
-    void deleteMedicalRecordInfo_notFound() throws Exception {
+    void deleteMedicalRecordInfo_notFound() {
         when(medicalRecordService.deleteMedicalRecord("John", "Doe")).thenReturn(false);
 
         Exception exception = null;
@@ -172,39 +169,40 @@ class MedicalRecordControllerTest {
             exception = ex;
         }
 
-        assertEquals("404 NOT_FOUND \"Dossier médical non trouvé pour suppression\"", exception.getMessage());
+        assertEquals("404 NOT_FOUND \"Medical record not found for deletion\"", exception.getMessage());
         verify(medicalRecordService, times(1)).deleteMedicalRecord("John", "Doe");
     }
 
+    /**
+     * Tests retrieving all medical records.
+     * Verifies that the HTTP status is 200 and the correct list of records is returned.
+     */
     @Test
-    void getAllMedicalRecordInfo_found() throws Exception {
-        // Mock des données
+    void getAllMedicalRecordInfo_found() {
         MedicalRecord mockRecord1 = createMedicalRecord();
         MedicalRecord mockRecord2 = new MedicalRecord("Jane", "Doe", "02/02/1992", List.of("Med3"), List.of("Allergy3"));
         List<MedicalRecord> mockMedicalRecords = List.of(mockRecord1, mockRecord2);
 
-        // Configuration du mock pour retourner les enregistrements
         when(medicalRecordService.getAllMedicalRecordList()).thenReturn(mockMedicalRecords);
 
-        // Appel du contrôleur
         ResponseEntity<List<MedicalRecord>> response = medicalRecordController.getAllMedicalRecordInfo();
 
-        // Vérification des résultats
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(mockMedicalRecords, response.getBody());
         assertEquals(2, response.getBody().size());
         verify(medicalRecordService, times(1)).getAllMedicalRecordList();
     }
 
+    /**
+     * Tests retrieving all medical records when no records are found.
+     * Verifies that the HTTP status is 404 and the response body is null.
+     */
     @Test
-    void getAllMedicalRecordInfo_notFound() throws Exception {
-        // Configuration du mock pour retourner une liste vide
+    void getAllMedicalRecordInfo_notFound() {
         when(medicalRecordService.getAllMedicalRecordList()).thenReturn(Collections.emptyList());
 
-        // Appel du contrôleur
         ResponseEntity<List<MedicalRecord>> response = medicalRecordController.getAllMedicalRecordInfo();
 
-        // Vérification des résultats
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
         verify(medicalRecordService, times(1)).getAllMedicalRecordList();

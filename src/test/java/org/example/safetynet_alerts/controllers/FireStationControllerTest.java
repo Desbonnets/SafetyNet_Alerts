@@ -16,28 +16,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
- * Classe de test pour le contrôleur {@link FireStationController}.
- * Cette classe vérifie les fonctionnalités principales des points d'entrée API pour gérer les stations de pompiers.
+ * Test class for the {@link FireStationController}.
+ * This class verifies the main functionalities of the API endpoints for managing fire stations.
  */
 class FireStationControllerTest {
 
     @Mock
-    private FireStationService fireStationService; // Mock du service FireStationService
+    private FireStationService fireStationService; // Mock of the FireStationService
 
     @InjectMocks
-    private FireStationController fireStationController; // Contrôleur à tester
+    private FireStationController fireStationController; // Controller to test
 
     /**
-     * Constructeur par défaut.
-     * Initialise les mocks nécessaires pour les tests.
+     * Default constructor.
+     * Initializes the necessary mocks for the tests.
      */
     public FireStationControllerTest() {
         MockitoAnnotations.openMocks(this);
     }
 
     /**
-     * Teste la récupération des informations d'une station trouvée.
-     * Vérifie que le statut HTTP et les données retournées sont corrects.
+     * Tests retrieving information of a found station.
+     * Verifies that the HTTP status and the returned data are correct.
      */
     @Test
     void getFirestationInfo_found() {
@@ -53,8 +53,8 @@ class FireStationControllerTest {
     }
 
     /**
-     * Teste la récupération des informations d'une station non trouvée.
-     * Vérifie que le statut HTTP est 404 et que le corps de la réponse est null.
+     * Tests retrieving information of a station not found.
+     * Verifies that the HTTP status is 404 and that the response body is null.
      */
     @Test
     void getFirestationInfo_notFound() {
@@ -69,8 +69,8 @@ class FireStationControllerTest {
     }
 
     /**
-     * Teste l'ajout d'une station de pompiers réussie.
-     * Vérifie que le statut HTTP est 201 et que la station est bien ajoutée.
+     * Tests successfully adding a fire station.
+     * Verifies that the HTTP status is 201 and that the station is correctly added.
      */
     @Test
     void postFirestation_success() {
@@ -85,8 +85,8 @@ class FireStationControllerTest {
     }
 
     /**
-     * Teste l'échec de l'ajout d'une station de pompiers.
-     * Vérifie qu'une exception avec un statut 400 est levée en cas d'échec.
+     * Tests the failure of adding a fire station.
+     * Verifies that an exception with a 400 status is thrown in case of failure.
      */
     @Test
     void postFirestation_failure() {
@@ -100,13 +100,13 @@ class FireStationControllerTest {
             exception = ex;
         }
 
-        assertEquals("400 BAD_REQUEST \"Erreur d'enregistrement\"", exception.getMessage());
+        assertEquals("400 BAD_REQUEST \"Registration error\"", exception.getMessage());
         verify(fireStationService, times(1)).addFireStation(newStation);
     }
 
     /**
-     * Teste la mise à jour réussie d'une station de pompiers.
-     * Vérifie que le statut HTTP est 200 et que les données mises à jour sont correctes.
+     * Tests the successful update of a fire station.
+     * Verifies that the HTTP status is 200 and that the updated data is correct.
      */
     @Test
     void putFirestationInfo_success() {
@@ -123,8 +123,8 @@ class FireStationControllerTest {
     }
 
     /**
-     * Teste l'échec de la mise à jour d'une station de pompiers.
-     * Vérifie qu'une exception avec un statut 404 est levée si la station n'existe pas.
+     * Tests the failure of updating a fire station.
+     * Verifies that an exception with a 404 status is thrown if the station is not found.
      */
     @Test
     void putFirestationInfo_notFound() {
@@ -140,13 +140,13 @@ class FireStationControllerTest {
             exception = ex;
         }
 
-        assertEquals("404 NOT_FOUND \"Station non trouvée pour mise à jour\"", exception.getMessage());
+        assertEquals("404 NOT_FOUND \"Station not found for update\"", exception.getMessage());
         verify(fireStationService, times(1)).updateFireStation(address, station, updatedStation);
     }
 
     /**
-     * Teste la suppression réussie d'une station de pompiers.
-     * Vérifie que le statut HTTP est 200 en cas de suppression réussie.
+     * Tests the successful deletion of a fire station.
+     * Verifies that the HTTP status is 200 on successful deletion.
      */
     @Test
     void deleteFirestationInfo_success() {
@@ -161,8 +161,8 @@ class FireStationControllerTest {
     }
 
     /**
-     * Teste l'échec de la suppression d'une station de pompiers.
-     * Vérifie qu'une exception avec un statut 404 est levée si la station n'existe pas.
+     * Tests the failure of deleting a fire station.
+     * Verifies that an exception with a 404 status is thrown if the station is not found.
      */
     @Test
     void deleteFirestationInfo_notFound() {
@@ -177,7 +177,7 @@ class FireStationControllerTest {
             exception = ex;
         }
 
-        assertEquals("404 NOT_FOUND \"Station non trouvée pour suppression\"", exception.getMessage());
+        assertEquals("404 NOT_FOUND \"Station not found for deletion\"", exception.getMessage());
         verify(fireStationService, times(1)).deleteFireStation(station, address);
     }
 }

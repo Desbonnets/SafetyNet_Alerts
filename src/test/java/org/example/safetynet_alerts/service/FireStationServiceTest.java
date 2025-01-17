@@ -17,48 +17,48 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Classe de test pour le service {@link FireStationService}.
- * Cette classe teste toutes les fonctionnalités principales du service,
- * notamment la gestion des stations de pompiers.
+ * Unit test class for {@link FireStationService}.
+ * This class verifies the primary functionalities of the service,
+ * including the management of fire stations.
  */
 class FireStationServiceTest {
 
     @Mock
-    private ObjectMapper objectMapper; // Mock de l'ObjectMapper pour lire les données JSON
+    private ObjectMapper objectMapper; // Mocked ObjectMapper for reading JSON data
 
-    private FireStationService fireStationService; // Instance de FireStationService à tester
+    private FireStationService fireStationService; // Instance of FireStationService under test
 
-    private List<FireStation> mockFireStations; // Liste simulée des stations de pompiers
+    private List<FireStation> mockFireStations; // Simulated list of fire stations
 
     /**
-     * Configuration avant chaque test.
-     * Initialise les mocks et charge des données simulées pour les tests.
+     * Setup before each test.
+     * Initializes mocks and loads simulated data for testing.
      *
-     * @throws IOException si une erreur se produit lors du chargement des données simulées.
+     * @throws IOException if an error occurs while loading mock data.
      */
     @BeforeEach
     void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
 
-        // Mock des données initiales
+        // Mock initial data
         mockFireStations = new ArrayList<>();
         mockFireStations.add(new FireStation("123 Main St", 1));
         mockFireStations.add(new FireStation("456 Elm St", 2));
 
-        // Mock du fichier JSON
+        // Mock JSON data
         FireStationsData mockData = new FireStationsData();
         mockData.setFirestations(mockFireStations);
 
-        // Mock de l'ObjectMapper pour retourner des données simulées
+        // Mock ObjectMapper behavior to return simulated data
         when(objectMapper.readValue(any(InputStream.class), eq(FireStationsData.class))).thenReturn(mockData);
 
-        // Initialisation du service avec l'ObjectMapper mocké
+        // Initialize service with mocked ObjectMapper
         fireStationService = new FireStationService(objectMapper);
     }
 
     /**
-     * Teste la récupération de toutes les stations.
-     * Vérifie que toutes les stations initiales sont renvoyées correctement.
+     * Tests retrieving all fire stations.
+     * Verifies that all initial stations are returned correctly.
      */
     @Test
     void getAllFireStations_shouldReturnAllStations() {
@@ -67,19 +67,19 @@ class FireStationServiceTest {
     }
 
     /**
-     * Teste la récupération des stations par numéro.
-     * Vérifie que les stations associées au numéro donné sont renvoyées correctement.
+     * Tests retrieving fire stations by station number.
+     * Verifies that the stations associated with the given number are returned correctly.
      */
     @Test
     void getFireStationByNumber_shouldReturnStationsForGivenNumber() {
         List<FireStation> result = fireStationService.getFireStationByNumber(1);
         assertEquals(1, result.size());
-        assertEquals("123 Main St", result.getFirst().getAddress());
+        assertEquals("123 Main St", result.get(0).getAddress());
     }
 
     /**
-     * Teste la récupération des stations avec un numéro invalide.
-     * Vérifie qu'une liste vide est renvoyée si aucune station ne correspond.
+     * Tests retrieving fire stations with an invalid number.
+     * Verifies that an empty list is returned if no station matches.
      */
     @Test
     void getFireStationByNumber_shouldReturnEmptyListForInvalidNumber() {
@@ -88,8 +88,8 @@ class FireStationServiceTest {
     }
 
     /**
-     * Teste l'ajout d'une nouvelle station.
-     * Vérifie que la station est ajoutée correctement si elle n'existe pas déjà.
+     * Tests adding a new fire station.
+     * Verifies that the station is added correctly if it does not already exist.
      */
     @Test
     void addFireStation_shouldAddNewStation() {
@@ -100,8 +100,8 @@ class FireStationServiceTest {
     }
 
     /**
-     * Teste l'ajout d'une station déjà existante.
-     * Vérifie qu'aucune station en double ne peut être ajoutée.
+     * Tests adding a duplicate fire station.
+     * Verifies that duplicate stations cannot be added.
      */
     @Test
     void addFireStation_shouldNotAddDuplicateStation() {
@@ -111,8 +111,8 @@ class FireStationServiceTest {
     }
 
     /**
-     * Teste la mise à jour d'une station existante.
-     * Vérifie que la station est mise à jour correctement.
+     * Tests updating an existing fire station.
+     * Verifies that the station is updated correctly.
      */
     @Test
     void updateFireStation_shouldUpdateExistingStation() {
@@ -122,8 +122,8 @@ class FireStationServiceTest {
     }
 
     /**
-     * Teste la mise à jour d'une station inexistante.
-     * Vérifie qu'une exception est levée si la station n'existe pas.
+     * Tests updating a non-existent fire station.
+     * Verifies that an exception is thrown if the station does not exist.
      */
     @Test
     void updateFireStation_shouldThrowExceptionIfStationNotFound() {
@@ -133,12 +133,12 @@ class FireStationServiceTest {
             fireStationService.updateFireStation("Nonexistent St", 99, updatedStation);
         });
 
-        assertEquals("FireStation non trouvée pour l'adresse et numéro de station : Nonexistent St 99", exception.getMessage());
+        assertEquals("FireStation not found for the address and station number: Nonexistent St 99", exception.getMessage());
     }
 
     /**
-     * Teste la suppression d'une station existante.
-     * Vérifie que la station est supprimée correctement si elle existe.
+     * Tests deleting an existing fire station.
+     * Verifies that the station is removed correctly if it exists.
      */
     @Test
     void deleteFireStation_shouldRemoveStationIfExists() {
@@ -148,8 +148,8 @@ class FireStationServiceTest {
     }
 
     /**
-     * Teste la suppression d'une station inexistante.
-     * Vérifie que la méthode retourne false si aucune station ne correspond.
+     * Tests deleting a non-existent fire station.
+     * Verifies that the method returns false if no matching station is found.
      */
     @Test
     void deleteFireStation_shouldReturnFalseIfStationNotFound() {
@@ -157,6 +157,10 @@ class FireStationServiceTest {
         assertFalse(success);
     }
 
+    /**
+     * Tests retrieving addresses by fire station number.
+     * Verifies that the correct address is returned for a valid station number.
+     */
     @Test
     void getAddressByFireStationsNumber_ShouldReturnCorrectAddressForStation() {
         List<String> address = fireStationService.getAddressByFireStationsNumber(1);
@@ -164,12 +168,20 @@ class FireStationServiceTest {
         assertEquals("123 Main St", address.get(0));
     }
 
+    /**
+     * Tests retrieving addresses for an invalid fire station number.
+     * Verifies that an empty list is returned for a non-existent station.
+     */
     @Test
     void getAddressByFireStationsNumber_ShouldReturnNullForInvalidStation() {
         List<String> address = fireStationService.getAddressByFireStationsNumber(99);
-        assertEquals(0, address.size());
+        assertTrue(address.isEmpty());
     }
 
+    /**
+     * Tests retrieving fire stations by address.
+     * Verifies that the stations for the given address are returned correctly.
+     */
     @Test
     void getFireStationByAddress_ShouldReturnStationsForGivenAddress() {
         List<FireStation> result = fireStationService.getFireStationByAddress("123 Main St");
@@ -177,10 +189,13 @@ class FireStationServiceTest {
         assertEquals(1, result.get(0).getStation());
     }
 
+    /**
+     * Tests retrieving fire stations for a non-existent address.
+     * Verifies that an empty list is returned.
+     */
     @Test
     void getFireStationByAddress_ShouldReturnEmptyListForInvalidAddress() {
         List<FireStation> result = fireStationService.getFireStationByAddress("Nonexistent St");
         assertTrue(result.isEmpty());
     }
-
 }

@@ -150,7 +150,7 @@ class PersonControllerTest {
         }
 
         assertTrue(exception instanceof ResponseStatusException);
-        assertEquals("400 BAD_REQUEST \"Erreur d'enregistrement\"", exception.getMessage());
+        assertEquals("400 BAD_REQUEST \"Registration error\"", exception.getMessage());
         verify(personService, times(1)).addPerson(newPerson);
     }
 
@@ -189,7 +189,7 @@ class PersonControllerTest {
         }
 
         assertTrue(exception instanceof ResponseStatusException);
-        assertEquals("404 NOT_FOUND \"Email non trouvée pour mise à jour\"", exception.getMessage());
+        assertEquals("404 NOT_FOUND \"Email not found for update\"", exception.getMessage());
         verify(personService, times(1)).updatePerson("john.doe@example.com", updatedPerson);
     }
 
@@ -223,7 +223,7 @@ class PersonControllerTest {
         }
 
         assertTrue(exception instanceof ResponseStatusException);
-        assertEquals("404 NOT_FOUND \"Email non trouvée pour suppression\"", exception.getMessage());
+        assertEquals("404 NOT_FOUND \"Email not found for deletion\"", exception.getMessage());
         verify(personService, times(1)).deletePerson("john.doe@example.com");
     }
 }

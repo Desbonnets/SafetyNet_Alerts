@@ -5,21 +5,37 @@ import org.springframework.boot.SpringApplication;
 
 import static org.mockito.Mockito.mockStatic;
 
+/**
+ * Unit test class for {@link SafetyNetAlertsApplication}.
+ * This class ensures that the application starts correctly without throwing exceptions.
+ */
 class SafetyNetAlertsApplicationTest {
 
+    /**
+     * Test for the {@code main} method.
+     * Verifies that the application starts without exceptions by mocking the
+     * {@link SpringApplication#run(Class, String...)} method.
+     * <p>
+     * Steps:
+     * <ol>
+     *     <li>Mimic the behavior of {@code SpringApplication.run()} using a mock.</li>
+     *     <li>Call the {@code main} method of the {@link SafetyNetAlertsApplication} class.</li>
+     *     <li>Verify that {@code SpringApplication.run()} is invoked as expected.</li>
+     * </ol>
+     */
     @Test
     void main_shouldStartApplicationWithoutExceptions() {
-        // Simule l'exécution de SpringApplication.run sans lever d'exception
+        // Simulates the execution of SpringApplication.run without throwing an exception
         try (var springApplicationMock = mockStatic(SpringApplication.class)) {
-            // Mock du comportement de SpringApplication.run
+            // Mock the behavior of SpringApplication.run
             springApplicationMock.when(() ->
                     SpringApplication.run(SafetyNetAlertsApplication.class, new String[] {})
             ).thenReturn(null);
 
-            // Appel de la méthode main
+            // Call the main method
             SafetyNetAlertsApplication.main(new String[] {});
 
-            // Vérifie que SpringApplication.run a bien été appelé
+            // Verify that SpringApplication.run was invoked
             springApplicationMock.verify(() ->
                     SpringApplication.run(SafetyNetAlertsApplication.class, new String[] {})
             );

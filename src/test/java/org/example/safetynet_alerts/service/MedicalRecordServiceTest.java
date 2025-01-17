@@ -11,24 +11,33 @@ import org.mockito.MockitoAnnotations;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit test class for {@link MedicalRecordService}.
+ * This class validates the core functionalities of the service,
+ * including the management of medical records.
+ */
 class MedicalRecordServiceTest {
 
     @Mock
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper; // Mocked ObjectMapper for reading JSON data
 
-    private MedicalRecordService medicalRecordService;
+    private MedicalRecordService medicalRecordService; // Instance of MedicalRecordService under test
 
-    private List<MedicalRecord> mockMedicalRecords;
+    private List<MedicalRecord> mockMedicalRecords; // Mocked list of medical records
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
+    /**
+     * Setup before each test.
+     * Initializes mocks and loads simulated data for testing.
+     *
+     * @throws IOException if an error occurs while loading mock data.
+     * @throws ParseException if an error occurs while parsing dates in mock data.
+     */
     @BeforeEach
     void setUp() throws IOException, ParseException {
         MockitoAnnotations.openMocks(this);
@@ -61,6 +70,10 @@ class MedicalRecordServiceTest {
         medicalRecordService = new MedicalRecordService(objectMapper);
     }
 
+    /**
+     * Tests retrieving all medical records.
+     * Verifies that all records are returned correctly.
+     */
     @Test
     void getAllMedicalRecordList_ShouldReturnAllRecords() {
         List<MedicalRecord> records = medicalRecordService.getAllMedicalRecordList();
@@ -68,6 +81,10 @@ class MedicalRecordServiceTest {
         assertEquals("John", records.get(0).getFirstName());
     }
 
+    /**
+     * Tests retrieving a medical record by first and last name.
+     * Verifies that the correct record is returned for a valid name.
+     */
     @Test
     void getMedicalRecordByFirstnameAndLastname_ShouldReturnCorrectRecord() {
         MedicalRecord record = medicalRecordService.getMedicalRecordByFirstnameAndLastname("John", "Doe");
@@ -76,12 +93,22 @@ class MedicalRecordServiceTest {
         assertEquals("Doe", record.getLastName());
     }
 
+    /**
+     * Tests retrieving a medical record with an invalid name.
+     * Verifies that null is returned if the record does not exist.
+     */
     @Test
     void getMedicalRecordByFirstnameAndLastname_ShouldReturnNullIfNotFound() {
         MedicalRecord record = medicalRecordService.getMedicalRecordByFirstnameAndLastname("Non", "Existent");
         assertNull(record);
     }
 
+    /**
+     * Tests adding a new medical record.
+     * Verifies that the record is added correctly.
+     *
+     * @throws ParseException if there is an error parsing the date for the new record.
+     */
     @Test
     void addMedicalRecord_ShouldAddNewRecord() throws ParseException {
         MedicalRecord newRecord = new MedicalRecord(
@@ -96,6 +123,12 @@ class MedicalRecordServiceTest {
         assertEquals(3, medicalRecordService.getAllMedicalRecordList().size());
     }
 
+    /**
+     * Tests updating an existing medical record.
+     * Verifies that the record is updated correctly.
+     *
+     * @throws ParseException if there is an error parsing the date for the updated record.
+     */
     @Test
     void updateMedicalRecord_ShouldUpdateExistingRecord() throws ParseException {
         MedicalRecord updatedRecord = new MedicalRecord(
@@ -110,6 +143,10 @@ class MedicalRecordServiceTest {
         assertEquals("medUpdated", result.getMedications().get(0));
     }
 
+    /**
+     * Tests deleting an existing medical record.
+     * Verifies that the record is removed correctly.
+     */
     @Test
     void deleteMedicalRecord_ShouldRemoveExistingRecord() {
         boolean isDeleted = medicalRecordService.deleteMedicalRecord("John", "Doe");
@@ -117,6 +154,10 @@ class MedicalRecordServiceTest {
         assertEquals(1, medicalRecordService.getAllMedicalRecordList().size());
     }
 
+    /**
+     * Tests adding a duplicate medical record.
+     * Verifies that duplicate records are not added.
+     */
     @Test
     void addMedicalRecord_ShouldNotAddDuplicateRecord() {
         MedicalRecord duplicateRecord = new MedicalRecord(
@@ -131,6 +172,10 @@ class MedicalRecordServiceTest {
         assertEquals(2, medicalRecordService.getAllMedicalRecordList().size());
     }
 
+    /**
+     * Tests updating a non-existent medical record.
+     * Verifies that an exception is thrown if the record does not exist.
+     */
     @Test
     void updateMedicalRecord_ShouldThrowExceptionIfRecordNotFound() {
         MedicalRecord updatedRecord = new MedicalRecord(
@@ -142,9 +187,13 @@ class MedicalRecordServiceTest {
         );
         Exception exception = assertThrows(IllegalArgumentException.class, () ->
                 medicalRecordService.updateMedicalRecord("Non", "Existent", updatedRecord));
-        assertEquals("MedicalRecord non trouvée pour le nom et prénom : Non Existent", exception.getMessage());
+        assertEquals("MedicalRecord not found for the first and last name: Non Existent", exception.getMessage());
     }
 
+    /**
+     * Tests deleting a non-existent medical record.
+     * Verifies that the method returns false if no matching record is found.
+     */
     @Test
     void deleteMedicalRecord_ShouldReturnFalseIfRecordNotFound() {
         boolean isDeleted = medicalRecordService.deleteMedicalRecord("Non", "Existent");
@@ -152,11 +201,13 @@ class MedicalRecordServiceTest {
         assertEquals(2, medicalRecordService.getAllMedicalRecordList().size());
     }
 
+    /**
+     * Tests retrieving a medical record when null parameters are passed.
+     * Verifies that null is returned if either the first or last name is null.
+     */
     @Test
     void getMedicalRecordByFirstnameAndLastname_ShouldHandleNullParameters() {
-        MedicalRecord record = medicalRecordService.getMedicalRecordByFirstnameAndLastname(null, null);
-        assertNull(record);
+        MedicalRecord medicalRecord = medicalRecordService.getMedicalRecordByFirstnameAndLastname(null, null);
+        assertNull(medicalRecord);
     }
-
-
 }

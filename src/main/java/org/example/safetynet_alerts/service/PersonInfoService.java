@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.safetynet_alerts.models.MedicalRecord;
 import org.example.safetynet_alerts.models.Person;
-import org.example.safetynet_alerts.models.PersonInfoDTO;
 import org.example.safetynet_alerts.models.PersonsData;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -52,28 +51,24 @@ public class PersonInfoService {
         logger.info("Données chargées : {}", personList.size());
     }
 
-    public List<PersonInfoDTO> getAllPersonInfoDTO(List<Person> persons) {
-
-        if (persons.isEmpty()) {
-            return Collections.emptyList();
-        }
-
+    public List<Map<String, Object>> getAllPersonInfo(List<Person> persons) {
         return persons.stream()
                 .map(person -> {
                     MedicalRecord medicalRecord = medicalRecordService.getMedicalRecordByFirstnameAndLastname(
                             person.getFirstName(), person.getLastName());
                     int age = (medicalRecord != null && medicalRecord.getBirthDate() != null)
                             ? DateUtils.calculateAge(medicalRecord.getBirthDate())
-                            : 0; // 0 ou une autre valeur par défaut si la date de naissance est manquante
-                    return new PersonInfoDTO(
-                            person.getFirstName(),
-                            person.getLastName(),
-                            person.getAddress(),
-                            age,
-                            person.getPhone(),
-                            person.getEmail(),
-                            medicalRecord != null ? medicalRecord.getMedications() : Collections.emptyList(),
-                            medicalRecord != null ? medicalRecord.getAllergies() : Collections.emptyList()
+                            : 0; // Valeur par défaut si la date de naissance est manquante
+
+                    return Map.of(
+                            "firstName", person.getFirstName(),
+                            "lastName", person.getLastName(),
+                            "address", person.getAddress(),
+                            "age", age,
+                            "phone", person.getPhone(),
+                            "email", person.getEmail(),
+                            "medications", medicalRecord != null ? medicalRecord.getMedications() : Collections.emptyList(),
+                            "allergies", medicalRecord != null ? medicalRecord.getAllergies() : Collections.emptyList()
                     );
                 })
                 .collect(Collectors.toList());
@@ -115,17 +110,30 @@ public class PersonInfoService {
 
     public Map<String, Object> getCoverageByFireStation(int stationNumber) {
         // Récupérer les adresses desservies par la station donnée
-        String address = fireStationService.getAddressByFireStationsNumber(stationNumber);
+        List<String> addresses = fireStationService.getAddressByFireStationsNumber(stationNumber);
 
         // Filtrer les personnes vivant à ces adresses
         List<Person> coveredPersons = personList.stream()
-                .filter(person -> Objects.equals(address, person.getAddress()))  // Vérifier si l'adresse de la personne est desservie par la station
+                .filter(person -> addresses.contains(person.getAddress())) // Vérifier si l'adresse est desservie
                 .collect(Collectors.toList());
 
         // Calculer le nombre d'adultes et d'enfants
         long adultsCount = coveredPersons.stream()
-                .filter(person -> DateUtils.calculateAge(medicalRecordService.getMedicalRecordByFirstnameAndLastname(person.getFirstName(), person.getLastName()).getBirthDate()) > 18)
+                .filter(person -> {
+                    MedicalRecord medicalRecord = medicalRecordService.getMedicalRecordByFirstnameAndLastname(
+                            person.getFirstName(), person.getLastName());
+                    logger.info("medicalRecord BirthDate : {}", medicalRecord.getBirthDate());
+
+                    int age = (medicalRecord != null && medicalRecord.getBirthDate() != null)
+                            ? DateUtils.calculateAge(medicalRecord.getBirthDate())
+                            : -1;
+                    if(age == -1){
+                        throw new IllegalArgumentException("La date de naissance ne peut pas être nulle.");
+                    }
+                    return age > 18;
+                })
                 .count();
+        logger.info("adultsCount : {}", adultsCount);
         long childrenCount = coveredPersons.size() - adultsCount;
 
         // Construire la liste des informations des personnes couvertes par la caserne

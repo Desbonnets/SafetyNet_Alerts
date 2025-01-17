@@ -158,4 +158,58 @@ class PersonServiceTest {
         assertFalse(isDeleted);
         assertEquals(2, personService.getAllPersonList().size());
     }
+
+    @Test
+    void getAllEmailByCity_ShouldReturnEmailsForGivenCity() {
+        List<String> emails = personService.getAllEmailByCity("City");
+        assertEquals(1, emails.size());
+        assertEquals("john.doe@example.com", emails.get(0));
+    }
+
+    @Test
+    void getAllEmailByCity_ShouldReturnEmptyListIfCityNotFound() {
+        List<String> emails = personService.getAllEmailByCity("NonexistentCity");
+        assertTrue(emails.isEmpty());
+    }
+
+    @Test
+    void getAllPersonByLastname_ShouldReturnPersonsWithGivenLastname() {
+        List<Person> persons = personService.getAllPersonByLastname("Doe");
+        assertEquals(1, persons.size());
+        assertEquals("John", persons.get(0).getFirstName());
+    }
+
+    @Test
+    void getAllPersonByLastname_ShouldReturnEmptyListIfLastnameNotFound() {
+        List<Person> persons = personService.getAllPersonByLastname("Nonexistent");
+        assertTrue(persons.isEmpty());
+    }
+
+    @Test
+    void getPersonsByAddress_ShouldReturnPersonsForGivenAddress() {
+        List<Person> persons = personService.getPersonsByAddress("123 Main St");
+        assertEquals(1, persons.size());
+        assertEquals("John", persons.get(0).getFirstName());
+    }
+
+    @Test
+    void getPersonsByAddress_ShouldReturnEmptyListIfAddressNotFound() {
+        List<Person> persons = personService.getPersonsByAddress("Nonexistent Address");
+        assertTrue(persons.isEmpty());
+    }
+
+    @Test
+    void getAllPhoneByPersons_ShouldReturnPhonesForGivenPersons() {
+        List<String> phones = personService.getAllPhoneByPersons(mockPersons);
+        assertEquals(2, phones.size());
+        assertTrue(phones.contains("555-1234"));
+        assertTrue(phones.contains("555-5678"));
+    }
+
+    @Test
+    void getAllPhoneByPersons_ShouldReturnEmptyListIfPersonsListIsEmpty() {
+        List<String> phones = personService.getAllPhoneByPersons(new ArrayList<>());
+        assertTrue(phones.isEmpty());
+    }
+
 }

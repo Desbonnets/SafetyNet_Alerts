@@ -54,12 +54,12 @@ public class FireStationService {
                 .collect(Collectors.toList());
     }
 
-    public String getAddressByFireStationsNumber(int station) {
+    public List<String> getAddressByFireStationsNumber(int station) {
 
         return fireStations.stream()
                 .filter(fireStation -> fireStation.getStation() == station)
                 .map(FireStation::getAddress)
-                .findAny().orElse(null);
+                .collect(Collectors.toList());
     }
 
     public List<FireStation> getFireStationByAddress(String address) {

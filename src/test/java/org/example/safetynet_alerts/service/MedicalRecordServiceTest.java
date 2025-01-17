@@ -38,14 +38,14 @@ class MedicalRecordServiceTest {
         mockMedicalRecords.add(new MedicalRecord(
                 "John",
                 "Doe",
-                dateFormat.parse("01/01/1980"),
+                "01/01/1980",
                 List.of("med1"),
                 List.of("allergy1")
         ));
         mockMedicalRecords.add(new MedicalRecord(
                 "Jane",
                 "Smith",
-                dateFormat.parse("02/02/1990"),
+                "02/02/1990",
                 List.of("med2"),
                 List.of("allergy2")
         ));
@@ -87,7 +87,7 @@ class MedicalRecordServiceTest {
         MedicalRecord newRecord = new MedicalRecord(
                 "Alice",
                 "Wonder",
-                dateFormat.parse("03/03/2000"),
+                "03/03/2000",
                 List.of("med3"),
                 List.of("allergy3")
         );
@@ -101,12 +101,12 @@ class MedicalRecordServiceTest {
         MedicalRecord updatedRecord = new MedicalRecord(
                 "John",
                 "Doe",
-                dateFormat.parse("01/01/1985"),
+                "01/01/1985",
                 List.of("medUpdated"),
                 List.of("allergyUpdated")
         );
         MedicalRecord result = medicalRecordService.updateMedicalRecord("John", "Doe", updatedRecord);
-        assertEquals(dateFormat.parse("01/01/1985"), result.getBirthDate());
+        assertEquals("01/01/1985", result.getBirthDate());
         assertEquals("medUpdated", result.getMedications().get(0));
     }
 
@@ -116,4 +116,47 @@ class MedicalRecordServiceTest {
         assertTrue(isDeleted);
         assertEquals(1, medicalRecordService.getAllMedicalRecordList().size());
     }
+
+    @Test
+    void addMedicalRecord_ShouldNotAddDuplicateRecord() {
+        MedicalRecord duplicateRecord = new MedicalRecord(
+                "John",
+                "Doe",
+                "01/01/1980",
+                List.of("med1"),
+                List.of("allergy1")
+        );
+        boolean isAdded = medicalRecordService.addMedicalRecord(duplicateRecord);
+        assertFalse(isAdded);
+        assertEquals(2, medicalRecordService.getAllMedicalRecordList().size());
+    }
+
+    @Test
+    void updateMedicalRecord_ShouldThrowExceptionIfRecordNotFound() {
+        MedicalRecord updatedRecord = new MedicalRecord(
+                "Non",
+                "Existent",
+                "01/01/1985",
+                List.of("medUpdated"),
+                List.of("allergyUpdated")
+        );
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                medicalRecordService.updateMedicalRecord("Non", "Existent", updatedRecord));
+        assertEquals("MedicalRecord non trouvée pour le nom et prénom : Non Existent", exception.getMessage());
+    }
+
+    @Test
+    void deleteMedicalRecord_ShouldReturnFalseIfRecordNotFound() {
+        boolean isDeleted = medicalRecordService.deleteMedicalRecord("Non", "Existent");
+        assertFalse(isDeleted);
+        assertEquals(2, medicalRecordService.getAllMedicalRecordList().size());
+    }
+
+    @Test
+    void getMedicalRecordByFirstnameAndLastname_ShouldHandleNullParameters() {
+        MedicalRecord record = medicalRecordService.getMedicalRecordByFirstnameAndLastname(null, null);
+        assertNull(record);
+    }
+
+
 }

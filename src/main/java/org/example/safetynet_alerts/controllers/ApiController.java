@@ -142,9 +142,9 @@ public class ApiController {
      * @return a list of phone numbers associated with the fire station, or an empty list if no data is found
      */
     @GetMapping("/phoneAlert")
-    public ResponseEntity<List<String>> getPhoneAlert(@RequestParam int fireStationNumber) {
+    public ResponseEntity<List<String>> getPhoneAlert(@RequestParam int firestation) {
 
-        List<String> addresses = fireStationService.getAddressByFireStationsNumber(fireStationNumber);
+        List<String> addresses = fireStationService.getAddressByFireStationsNumber(firestation);
         if (addresses == null || addresses.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Collections.emptyList());

@@ -180,7 +180,7 @@ class ApiControllerTest {
                 .thenReturn(List.of("123-456-7890"));
 
         mockMvc.perform(get("/phoneAlert")
-                        .param("fireStationNumber", "1"))
+                        .param("firestation", "1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0]").value("123-456-7890"));
@@ -196,7 +196,7 @@ class ApiControllerTest {
                 .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/phoneAlert")
-                        .param("fireStationNumber", "1"))
+                        .param("firestation", "1"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$", hasSize(0)));
     }

@@ -138,7 +138,7 @@ public class ApiController {
     /**
      * Get a list of phone numbers for a given fire station number.
      *
-     * @param fireStationNumber the fire station number to get phone alerts for
+     * @param firestation the fire station number to get phone alerts for
      * @return a list of phone numbers associated with the fire station, or an empty list if no data is found
      */
     @GetMapping("/phoneAlert")
